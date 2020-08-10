@@ -26,6 +26,7 @@ static void float2tsem(float f, int32_t *t, uint32_t *s, int32_t *e, uint32_t *m
     case 0:
         if (*m == 0) {
             *t = FLOAT_TYPE_ZERO;
+            *e = -128;
             return;
         } else {
             *t  = FLOAT_TYPE_SUBNORMAL;
@@ -146,7 +147,7 @@ static float fdiv(float a, float b)
     float2tsem(b, &tb, &sb, &eb, &mb);
     sc = sa ^ sb;
     ec = ea - eb - 1;
-
+    if (mb == 0) return tsem2float(FLOAT_TYPE_INFINITY, 0, 0, 0);
     t64 = ((uint64_t)ma << 24);
     mc  = (uint32_t)(t64 / mb);
     return !mc ? tsem2float(FLOAT_TYPE_ZERO, sc, 0, 0) : tsem2float(FLOAT_TYPE_NORMAL, sc, ec, mc);
